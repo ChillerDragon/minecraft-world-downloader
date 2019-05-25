@@ -1,10 +1,23 @@
 package game.data;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class Coordinate2D {
     private static int offsetX = 0;
     private static int offsetZ = 0;
+
+    static BiConsumer<Coordinate2D, Boolean> rotator = (coord, inChunk) -> {
+        int x = coord.x;
+        int z = coord.z;
+        coord.x = -z;
+        coord.z = x;
+
+        if (inChunk) {
+            coord.x = (coord.x + 15) % 16;
+        }
+
+    };
 
     int x;
     int z;
@@ -27,11 +40,17 @@ public class Coordinate2D {
     public void offsetGlobal() {
         this.x += offsetX;
         this.z += offsetZ;
+        rotator.accept(this, false);
     }
 
     public void offsetChunk() {
         this.x += offsetX >> 4;
         this.z += offsetZ >> 4;
+        rotator.accept(this, false);
+    }
+
+    public void rotateInChunk() {
+        rotator.accept(this, true);
     }
 
     public boolean isInRange(Coordinate2D other, int distance) {

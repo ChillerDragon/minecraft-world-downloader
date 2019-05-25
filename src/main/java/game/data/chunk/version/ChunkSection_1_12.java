@@ -1,5 +1,6 @@
 package game.data.chunk.version;
 
+import game.data.Coordinate3D;
 import game.data.chunk.Chunk;
 import game.data.chunk.ChunkSection;
 import game.data.chunk.Palette;
@@ -22,6 +23,8 @@ public class ChunkSection_1_12 extends ChunkSection {
     @Override
     public void setBlocks(long[] blocks) {
         super.setBlocks(blocks);
+        Coordinate3D rotator = new Coordinate3D(-1, -1, -1);
+
         int individualValueMask = (1 << bitsPerBlock) - 1;
         for (int y = 0; y < Chunk.SECTION_HEIGHT; y++) {
             for (int z = 0; z < Chunk.SECTION_WIDTH; z++) {
@@ -40,7 +43,9 @@ public class ChunkSection_1_12 extends ChunkSection {
                     }
                     data &= individualValueMask;
 
-                    this.blockStates[x][y][z] = palette.stateFromId(data);
+                    rotator.setTo(x, y, z);
+                    rotator.rotateInChunk();
+                    this.blockStates[rotator.getX()][rotator.getY()][rotator.getZ()] = palette.stateFromId(data);
                 }
             }
         }
